@@ -3,6 +3,8 @@ package com.dotsgamems;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.awt.*;
+
 
 @Data
 public class Game {
@@ -45,6 +47,17 @@ public class Game {
 
     public String printComputerBoard() {
         return print(computerBoard);
+    }
+
+    public void setDot(@NonNull Players player, @NonNull Point dot) {
+        if(dot.x < 0 || dot.x >= boardSize || dot.y < 0 || dot.y >= boardSize) {
+            throw new IllegalArgumentException("The given point is out of boarder: " + dot);
+        }
+        if (!computerBoard[dot.x][dot.y].equals(emptyDot)) {
+            throw new IllegalArgumentException("The board already have dot at this point: " + dot);
+        }
+        board[dot.x][dot.y] = player.getDotLabel();
+        computerBoard[dot.x][dot.y] = player.getDotLabel();
     }
 
     private String print(@NonNull String[][] printBoard) {
