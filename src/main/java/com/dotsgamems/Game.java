@@ -20,27 +20,16 @@ public class Game {
             throw new IllegalArgumentException("The board size should be at least 5");
         }
 
-        this.board = new String[boardSize][boardSize];
-        this.computerBoard = new String[boardSize][boardSize];
         this.gameUtils = new GameUtils();
+        this.board = gameUtils.createEmptyBoard(boardSize);
+        this.computerBoard = gameUtils.createEmptyBoard(boardSize);
 
-        initBoards();
-
-    }
-
-    private void initBoards() {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = Players.getEmptyDotLabel();
-                computerBoard[i][j] = Players.getEmptyDotLabel();
-            }
-        }
-
-        int middlePoint = board.length/2;
+        int middlePoint = boardSize/2;
         board[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
         board[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
         computerBoard[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
         computerBoard[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
+
     }
 
     public String printBoard() {
