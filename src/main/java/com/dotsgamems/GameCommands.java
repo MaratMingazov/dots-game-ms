@@ -17,13 +17,23 @@ public class GameCommands {
         return game.printBoard();
     }
 
-    @ShellMethod("Move player1")
-    public String move1(@ShellOption(help = "Dot X coordinates") int x,
-                        @ShellOption(help = "Dot Y coordinates") int y) {
+    @ShellMethod("First player movement")
+    public String move1(@ShellOption(help = "X coordinates") int x,
+                        @ShellOption(help = "Y coordinates") int y) {
         if (game == null) {
-            throw new IllegalArgumentException("Firstly you should start the game");
+            throw new IllegalArgumentException("Firstly you should start the game.");
         }
         game.setDot(Players.FIRST, new Point(x,y));
+        return game.printBoard();
+    }
+
+    @ShellMethod("Second player movement")
+    public String move2(@ShellOption(help = "X coordinates") int x,
+                        @ShellOption(help = "Y coordinates") int y) {
+        if (game == null) {
+            throw new IllegalArgumentException("Firstly you should start the game.");
+        }
+        game.setDot(Players.SECOND, new Point(x,y));
         return game.printBoard();
     }
 
