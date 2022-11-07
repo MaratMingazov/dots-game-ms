@@ -2,7 +2,7 @@ package com.dotsgamems;
 
 public enum Players {
     FIRST("1"),
-    SECOND("*");
+    SECOND("2");
 
     private final String dotLabel;
 
@@ -12,5 +12,9 @@ public enum Players {
 
     public String getDotLabel() {
         return this.dotLabel;
+    }
+
+    public static String getEmptyDotLabel() {
+        return "0";
     }
 }

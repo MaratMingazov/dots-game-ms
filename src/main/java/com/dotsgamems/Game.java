@@ -2,39 +2,41 @@ package com.dotsgamems;
 
 import lombok.Data;
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
 
-import java.awt.*;
 
-
+@Log4j2
 @Data
 public class Game {
 
-    private final String emptyDot = ".";
-
     private final String[][] board;
     private final String[][] computerBoard;
-
-    private final Integer boardSize;
+    private final GameUtils gameUtils;
 
     public Game(@NonNull Integer boardSize) {
-        this.boardSize = boardSize;
+
+        if (boardSize < 5) {
+            throw new IllegalArgumentException("The board size should be at least 5");
+        }
+
         this.board = new String[boardSize][boardSize];
         this.computerBoard = new String[boardSize][boardSize];
+        this.gameUtils = new GameUtils();
 
         initBoards();
 
     }
 
     private void initBoards() {
-
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                board[i][j] = emptyDot;
-                computerBoard[i][j] = emptyDot;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = Players.getEmptyDotLabel();
+                computerBoard[i][j] = Players.getEmptyDotLabel();
             }
         }
 
-        int middlePoint = boardSize/2;
+        int middlePoint = board.length/2;
         board[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
         board[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
         computerBoard[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
@@ -49,36 +51,51 @@ public class Game {
         return print(computerBoard);
     }
 
-    public void setDot(@NonNull Players player, @NonNull Point dot) {
-        if(dot.x < 0 || dot.x >= boardSize || dot.y < 0 || dot.y >= boardSize) {
-            throw new IllegalArgumentException("The given point is out of boarder: " + dot);
+    public void setDot(@NonNull Players player, int x, int y) {
+        if(x < 0 || x >= board.length || y < 0 || y >= board.length) {
+            throw new IllegalArgumentException("The given point is out of boarder: " + x + "," + y);
         }
-        if (!computerBoard[dot.x][dot.y].equals(emptyDot)) {
-            throw new IllegalArgumentException("The board already have dot at this point: " + dot);
+        if (!computerBoard[x][y].equals(Players.getEmptyDotLabel())) {
+            throw new IllegalArgumentException("The board already have dot at this point: " + x + "," + y);
         }
-        board[dot.x][dot.y] = player.getDotLabel();
-        computerBoard[dot.x][dot.y] = player.getDotLabel();
+        board[x][y] = player.getDotLabel();
+        computerBoard[x][y] = player.getDotLabel();
     }
 
     private String print(@NonNull String[][] printBoard) {
         StringBuilder result = new StringBuilder();
 
         result.append("   ");
-        for (int i = 0; i < boardSize; i++) {
+        for (int i = 0; i < board.length; i++) {
             String value = i < 10 ? "0" + i : Integer.toString(i);
             result.append(value).append(" ");
         }
         result.append("\n");
 
-        for (int i = 0; i < boardSize; i++) {
+        for (int i = 0; i < board.length; i++) {
             String value = i < 10 ? "0" + i : Integer.toString(i);
             result.append(value).append(" ");
-            for (int j = 0; j < boardSize; j++) {
-                result.append(printBoard[i][j]).append("  ");
+            for (int j = 0; j < board.length; j++) {
+                String dotValue = printBoard[i][j];
+                if (dotValue.equals("0")) {
+                    dotValue = ".";
+                }
+                if (dotValue.equals("1")) {
+                    dotValue = "1";
+                }
+                if (dotValue.equals("2")) {
+                    dotValue = "*";
+                }
+                result.append(dotValue).append("  ");
             }
             result.append("\n");
         }
         result.append("\n");
         return result.toString();
     }
+
+    public void findLoop(@NonNull Players player) {
+        val boardWithoutTails = gameUtils.removeTailDots(player, computerBoard);
+    }
+
 }
