@@ -8,8 +8,6 @@ import lombok.NonNull;
 public class Game {
 
     private final String emptyDot = ".";
-    private final String firstPlayerDot = "1";
-    private final String secondPlayerDot = "2";
 
     private final String[][] board;
     private final String[][] computerBoard;
@@ -35,10 +33,10 @@ public class Game {
         }
 
         int middlePoint = boardSize/2;
-        board[middlePoint][middlePoint] = firstPlayerDot;
-        board[middlePoint - 1][middlePoint + 1] = secondPlayerDot;
-        computerBoard[middlePoint][middlePoint] = firstPlayerDot;
-        computerBoard[middlePoint - 1][middlePoint + 1] = secondPlayerDot;
+        board[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
+        board[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
+        computerBoard[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
+        computerBoard[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
     }
 
     public String printBoard() {
