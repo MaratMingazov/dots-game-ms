@@ -15,24 +15,19 @@ public class GameCommands {
         return game.printComputerBoard();
     }
 
-    @ShellMethod("First player movement")
-    public String move1(@ShellOption(help = "X coordinates") int x,
-                        @ShellOption(help = "Y coordinates") int y) {
-        if (game == null) {
-            throw new IllegalArgumentException("Firstly you should start the game.");
-        }
-        game.setDot(Players.FIRST, x, y);
+    @ShellMethod("Player movement")
+    public String move(@ShellOption(help = "Player id") int id,
+                       @ShellOption(help = "X coordinates") int x,
+                       @ShellOption(help = "Y coordinates") int y) {
+        validate();
+        game.setDot(Players.getById(id), x, y);
         return game.printComputerBoard();
     }
 
-    @ShellMethod("Second player movement")
-    public String move2(@ShellOption(help = "X coordinates") int x,
-                        @ShellOption(help = "Y coordinates") int y) {
+    private void validate() {
         if (game == null) {
             throw new IllegalArgumentException("Firstly you should start the game.");
         }
-        game.setDot(Players.SECOND, x, y);
-        return game.printComputerBoard();
     }
 
 
