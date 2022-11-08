@@ -83,8 +83,9 @@ public class Game {
         return result.toString();
     }
 
-    public void findLoop(@NonNull Players player) {
-        val boardWithoutTails = gameUtils.removeTailDots(player, computerBoard);
+    public void updateCapturedDots(@NonNull Players player) {
+        val capturedDots = gameUtils.findCapturedDots(player, computerBoard);
+        capturedDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
     }
 
 }

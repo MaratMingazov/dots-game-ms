@@ -29,4 +29,12 @@ public enum Players {
             default: throw new IllegalArgumentException("The Player with given id does not exists");
         }
     }
+
+    public static Players getOppositeById(@NonNull Integer id) {
+        switch (id) {
+            case 1: return SECOND;
+            case 2: return FIRST;
+            default: throw new IllegalArgumentException("The Player with given id does not exists");
+        }
+    }
 }

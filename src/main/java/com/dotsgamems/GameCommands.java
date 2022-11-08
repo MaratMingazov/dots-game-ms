@@ -1,5 +1,6 @@
 package com.dotsgamems;
 
+import lombok.val;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -20,7 +21,11 @@ public class GameCommands {
                        @ShellOption(help = "X coordinates") int x,
                        @ShellOption(help = "Y coordinates") int y) {
         validate();
-        game.setDot(Players.getById(id), x, y);
+        val player = Players.getById(id);
+        val oppositePlayer = Players.getOppositeById(id);
+        game.setDot(player, x, y);
+        game.updateCapturedDots(player);
+        game.updateCapturedDots(oppositePlayer);
         return game.printComputerBoard();
     }
 
