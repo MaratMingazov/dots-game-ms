@@ -37,6 +37,46 @@ public class GameUtilsTest {
         assertTrue(isEqualDots(actualDots, expectedDots));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideInputsForFindCapturedEmptyDots")
+    void testFindCapturedDots(@NonNull String[][] board, @NonNull List<Point> capturedDots, @NonNull List<Point> expectedDots ) {
+        val gameUtils = new GameUtils();
+        val actualDots = gameUtils.findCapturedEmptyDots(board, capturedDots);
+
+        assertTrue(isEqualDots(actualDots, expectedDots));
+    }
+
+    private static Stream<Arguments> provideInputsForFindCapturedEmptyDots() {
+
+        /**
+         * 0110
+         * 1201
+         * 1201
+         * 0110
+         */
+        val board1 = createBoard(10);
+        board1[1][2] = Players.FIRST.getDotLabel();
+        board1[1][3] = Players.FIRST.getDotLabel();
+        board1[2][4] = Players.FIRST.getDotLabel();
+        board1[3][4] = Players.FIRST.getDotLabel();
+        board1[4][3] = Players.FIRST.getDotLabel();
+        board1[4][2] = Players.FIRST.getDotLabel();
+        board1[3][1] = Players.FIRST.getDotLabel();
+        board1[2][1] = Players.FIRST.getDotLabel();
+        board1[2][2] = Players.SECOND.getDotLabel();
+        board1[3][2] = Players.SECOND.getDotLabel();
+        List<Point> capturedDots1 = new ArrayList<>();
+        capturedDots1.add(new Point(2,2));
+        capturedDots1.add(new Point(3,2));
+        List<Point> expectedDots1 = new ArrayList<>();
+        expectedDots1.add(new Point(2,3));
+        expectedDots1.add(new Point(3,3));
+
+        return Stream.of(
+                Arguments.of(board1, capturedDots1, expectedDots1)
+        );
+    }
+
     private static Stream<Arguments> provideInputsForFindCapturedDots() {
         val givenBoard1 = createBoard(10);
         List<Point> expectedDots1 = new ArrayList<>();
@@ -55,6 +95,12 @@ public class GameUtilsTest {
         List<Point> expectedDots3 = new ArrayList<>();
         expectedDots3.add(new Point(3,3));
 
+        /**
+         * 010
+         * 121
+         * 121
+         * 010
+         */
         val givenBoard4 = createBoard(10);
         givenBoard4[2][3] = Players.FIRST.getDotLabel();
         givenBoard4[3][4] = Players.FIRST.getDotLabel();

@@ -85,7 +85,9 @@ public class Game {
 
     public void updateCapturedDots(@NonNull Players player) {
         val capturedDots = gameUtils.findCapturedDots(player, computerBoard);
+        val capturedEmptyDots = gameUtils.findCapturedEmptyDots(computerBoard, capturedDots);
         capturedDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
+        capturedEmptyDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
     }
 
 }

@@ -117,6 +117,54 @@ public class GameUtils {
     }
 
     /**
+     * The method find the captured empty dots for given 'capturedPlayerDots'
+     * The idea is to find all empty dots near 'capturedPlayerDots' as they captured as well
+     * @param board given board
+     * @param capturedPlayerDots given captured player dots
+     * @return list of captured empty dots
+     */
+    public List<Point> findCapturedEmptyDots(@NonNull String[][] board,
+                                             @NonNull List<Point> capturedPlayerDots) {
+        List<Point> capturedEmptyDots = new ArrayList<>();
+        List<Point> checkedEmptyDots = new ArrayList<>();
+        for (Point dot : capturedPlayerDots) {
+            capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x - 1, dot.y)));
+            capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x, dot.y + 1)));
+            capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x + 1, dot.y)));
+            capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x, dot.y - 1)));
+        }
+        return capturedEmptyDots;
+    }
+
+    private List<Point> checkEmptyCapturedDots(@NonNull String[][] board,
+                                              @NonNull List<Point> checkedEmptyDots,
+                                              @NonNull Point dot) {
+        List<Point> capturedEmptyDots = new ArrayList<>();
+
+        if (!isPointBelongToBoard(board, dot.x, dot.y)) {
+            return new ArrayList<>();
+        }
+        if (!board[dot.x][dot.y].equals(Players.getEmptyDotLabel())) {
+            return new ArrayList<>();
+        }
+        val isAlreadyChecked = checkedEmptyDots.stream().anyMatch(checkedDot -> checkedDot.x == dot.x && checkedDot.y == dot.y);
+        if (isAlreadyChecked) {
+            return new ArrayList<>();
+        }
+
+        checkedEmptyDots.add(dot);
+        capturedEmptyDots.add(dot);
+        capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x - 1, dot.y)));
+        capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x, dot.y + 1)));
+        capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x + 1, dot.y)));
+        capturedEmptyDots.addAll(checkEmptyCapturedDots(board, checkedEmptyDots, new Point(dot.x, dot.y - 1)));
+
+        return capturedEmptyDots;
+    }
+    
+    
+
+    /**
      * Method find all dots captured by given player
      * We check every opposite player dots being captured
      * @param player given player who wants to capture dots of opposite player
