@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
 
 import java.awt.*;
 import java.util.Map;
@@ -17,8 +19,12 @@ public class Game {
     private final String[][] computerBoard;
     private final GameUtils gameUtils;
 
+    private Point firstPlayerLastPoint = new Point(-1, -1);
+    private Point secondPlayerLastPoint = new Point(-1, -1);
+
     public Game(@NonNull Integer boardSize) {
 
+        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
         if (boardSize < 5) {
             throw new IllegalArgumentException("The board size should be at least 5");
         }
@@ -52,6 +58,13 @@ public class Game {
         }
         board[x][y] = player.getDotLabel();
         computerBoard[x][y] = player.getDotLabel();
+        if (player == Players.FIRST) {
+            firstPlayerLastPoint.x = x;
+            firstPlayerLastPoint.y = y;
+        } else {
+            secondPlayerLastPoint.x = x;
+            secondPlayerLastPoint.y = y;
+        }
     }
 
     private String print(@NonNull String[][] printBoard) {
@@ -72,16 +85,29 @@ public class Game {
                 if (dotValue.equals("0")) {
                     dotValue = ".";
                 }
-                if (dotValue.equals("1")) {
-                    dotValue = "1";
+                if (dotValue.equals(Players.FIRST.getDotLabel())) {
+                    dotValue = AnsiOutput.toString(AnsiColor.CYAN, "*", AnsiColor.DEFAULT);
+                    if(i == firstPlayerLastPoint.x && j == firstPlayerLastPoint.y) {
+                        dotValue = AnsiOutput.toString(AnsiColor.BRIGHT_CYAN, "*", AnsiColor.DEFAULT);
+                    }
                 }
-                if (dotValue.equals("2")) {
-                    dotValue = "*";
+                if (dotValue.equals(Players.SECOND.getDotLabel())) {
+                    dotValue = AnsiOutput.toString(AnsiColor.MAGENTA, "*", AnsiColor.DEFAULT);
+                    if(i == secondPlayerLastPoint.x && j == secondPlayerLastPoint.y) {
+                        dotValue = AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "*", AnsiColor.DEFAULT);
+                    }
                 }
                 result.append(dotValue).append("  ");
             }
             result.append("\n");
         }
+//        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+//        val a = AnsiOutput.toString(AnsiColor.MAGENTA, " a ", AnsiColor.DEFAULT);
+//        val b = AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, " b ", AnsiColor.DEFAULT);
+//        val c = AnsiOutput.toString(AnsiColor.CYAN, " a ", AnsiColor.DEFAULT);
+//        val d = AnsiOutput.toString(AnsiColor.BRIGHT_CYAN, " b ", AnsiColor.DEFAULT);
+//        result.append(a).append(b);
+//        result.append(c).append(d);
         result.append("\n");
         val score = calculateScore();
         result.append(score.get(Players.FIRST)).append(" : ").append(score.get(Players.SECOND)).append("\n");

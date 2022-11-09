@@ -21,12 +21,19 @@ public class GameCommands {
                        @ShellOption(help = "X coordinates") int x,
                        @ShellOption(help = "Y coordinates") int y) {
         validate();
+
+        if (game.isGameFinished()) {
+            return game.printComputerBoard();
+        }
         val player = Players.getById(id);
         val oppositePlayer = Players.getOppositeById(id);
         game.setDot(player, x, y);
         game.updateCapturedDots(player);
         game.updateCapturedDots(oppositePlayer);
 
+        if (game.isGameFinished()) {
+            return game.printComputerBoard();
+        }
         val oppositePlayerMove = game.calculateNextMove(oppositePlayer);
         game.setDot(oppositePlayer, oppositePlayerMove.x, oppositePlayerMove.y);
         game.updateCapturedDots(oppositePlayer);
