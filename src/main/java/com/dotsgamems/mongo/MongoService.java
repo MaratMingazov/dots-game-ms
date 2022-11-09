@@ -21,11 +21,12 @@ public class MongoService {
 
     private List<MongoBoard> mongoBoards = new ArrayList<>();
 
-    private void getMongoBoards(@NonNull Integer boardSize) {
+
+
+    private void downloadMongoBoards(@NonNull Integer boardSize) {
         Query query = new Query();
         query.addCriteria(Criteria.where("boardSize").is(boardSize));
-
-        val mongoBoards = mongoTemplate.find(query, MongoBoard.class);
+        this.mongoBoards = mongoTemplate.find(query, MongoBoard.class);
     }
 
     public String transformBoardToString(@NonNull String[][] board) {
