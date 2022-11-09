@@ -26,6 +26,12 @@ public class GameCommands {
         game.setDot(player, x, y);
         game.updateCapturedDots(player);
         game.updateCapturedDots(oppositePlayer);
+
+        val oppositePlayerMove = game.calculateNextMove(oppositePlayer);
+        game.setDot(oppositePlayer, oppositePlayerMove.x, oppositePlayerMove.y);
+        game.updateCapturedDots(oppositePlayer);
+        game.updateCapturedDots(player);
+
         return game.printComputerBoard();
     }
 

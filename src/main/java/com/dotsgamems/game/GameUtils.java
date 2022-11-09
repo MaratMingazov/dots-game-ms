@@ -6,8 +6,11 @@ import lombok.val;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameUtils {
+
+    private Random random = new Random();
 
     /**
      * Метод проходится по доске 'board' и удаляет все точки играка 'player' которые не сосетстуют с другими точками данного играка
@@ -261,6 +264,11 @@ public class GameUtils {
                                       @NonNull List<Point> visitedDots,
                                       @NonNull Point nextDot) {
 
+        if (!isPointBelongToBoard(board, nextDot.x, nextDot.y)) {
+            return true;
+        }
+
+
         // we can move there only if it is not player dot, and we do not visit this dot yet
         val isNextDotAlreadyVisited = visitedDots.stream().anyMatch(visitedDot -> visitedDot.x == nextDot.x && visitedDot.y == nextDot.y);
         if (!board[nextDot.x][nextDot.y].equals(player.getDotLabel()) && !isNextDotAlreadyVisited) {
@@ -272,6 +280,25 @@ public class GameUtils {
             }
         }
         return true;
+    }
+
+    @NonNull
+    public Point calculateNextMove(@NonNull Players player, @NonNull String[][] board) {
+        val points = getAvailableMoves(board);
+        int value = random.nextInt(points.size());
+        return points.get(value);
+    }
+
+    private List<Point> getAvailableMoves(@NonNull String[][] board) {
+        List<Point> result = new ArrayList<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if(board[i][j].equals(Players.getEmptyDotLabel())) {
+                    result.add(new Point(i,j));
+                }
+            }
+        }
+        return result;
     }
 
 }

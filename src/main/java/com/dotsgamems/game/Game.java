@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
+import java.awt.*;
 import java.util.Map;
 
 
@@ -27,10 +28,10 @@ public class Game {
         this.computerBoard = gameUtils.createEmptyBoard(boardSize);
 
         int middlePoint = boardSize/2;
-        board[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
-        board[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
-        computerBoard[middlePoint][middlePoint] = Players.FIRST.getDotLabel();
-        computerBoard[middlePoint - 1][middlePoint + 1] = Players.SECOND.getDotLabel();
+        board[middlePoint][middlePoint - 1] = Players.FIRST.getDotLabel();
+        board[middlePoint - 1][middlePoint] = Players.SECOND.getDotLabel();
+        computerBoard[middlePoint][middlePoint - 1] = Players.FIRST.getDotLabel();
+        computerBoard[middlePoint - 1][middlePoint] = Players.SECOND.getDotLabel();
 
     }
 
@@ -84,6 +85,11 @@ public class Game {
         result.append("\n");
         val score = calculateScore();
         result.append(score.get(Players.FIRST)).append(" : ").append(score.get(Players.SECOND)).append("\n");
+
+        if (isGameFinished()) {
+            result.append("Game over!").append("\n");
+        }
+
         return result.toString();
     }
 
@@ -118,6 +124,10 @@ public class Game {
             }
         }
         return Map.of(Players.FIRST, firstPlayerScore, Players.SECOND, secondPlayerScore);
+    }
+
+    public Point calculateNextMove(@NonNull Players player) {
+        return gameUtils.calculateNextMove(player, computerBoard);
     }
 
 }
