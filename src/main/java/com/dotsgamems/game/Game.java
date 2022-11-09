@@ -1,4 +1,4 @@
-package com.dotsgamems;
+package com.dotsgamems.game;
 
 import lombok.Data;
 import lombok.NonNull;

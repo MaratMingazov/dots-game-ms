@@ -1,4 +1,4 @@
-package com.dotsgamems;
+package com.dotsgamems.game;
 
 import lombok.val;
 import org.springframework.shell.standard.ShellComponent;
