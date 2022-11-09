@@ -5,6 +5,8 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
+import java.util.Map;
+
 
 @Log4j2
 @Data
@@ -80,6 +82,8 @@ public class Game {
             result.append("\n");
         }
         result.append("\n");
+        val score = calculateScore();
+        result.append(score.get(Players.FIRST)).append(" : ").append(score.get(Players.SECOND)).append("\n");
         return result.toString();
     }
 
@@ -88,6 +92,32 @@ public class Game {
         val capturedEmptyDots = gameUtils.findCapturedEmptyDots(computerBoard, capturedDots);
         capturedDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
         capturedEmptyDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
+    }
+
+    public boolean isGameFinished() {
+        for (int i = 0; i < computerBoard.length; i++) {
+            for (int j = 0; j < computerBoard[i].length; j++) {
+                if (computerBoard[i][j].equals(Players.getEmptyDotLabel())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public Map<Players,Integer> calculateScore() {
+        int firstPlayerScore = 0;
+        int secondPlayerScore = 0;
+        for (int i = 0; i < computerBoard.length; i++) {
+            for (int j = 0; j < computerBoard[i].length; j++) {
+                if (computerBoard[i][j].equals(Players.FIRST.getDotLabel()) && board[i][j].equals(Players.SECOND.getDotLabel())) {
+                    firstPlayerScore++;
+                } else if (computerBoard[i][j].equals(Players.SECOND.getDotLabel()) && board[i][j].equals(Players.FIRST.getDotLabel())) {
+                    secondPlayerScore++;
+                }
+            }
+        }
+        return Map.of(Players.FIRST, firstPlayerScore, Players.SECOND, secondPlayerScore);
     }
 
 }
