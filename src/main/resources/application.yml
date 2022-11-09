@@ -1,3 +1,7 @@
 spring:
   main:
     web-application-type: none
+    allow-bean-definition-overriding: true
+
+mongodb:
+  url: mongodb+srv://mongodbuser:mongodbpassword@mycluster.3gieos1.mongodb.net/?retryWrites=true&w=majority
