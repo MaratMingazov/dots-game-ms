@@ -1,7 +1,6 @@
 package com.dotsgamems.mongo;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.Value;
 
 @Value
@@ -10,5 +9,5 @@ public class MongoMove {
 
     int x;
     int y;
-    double probability;
+    int probability;
 }

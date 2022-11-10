@@ -1,5 +1,6 @@
 package com.dotsgamems.game;
 
+import com.dotsgamems.mongo.MongoService;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -22,12 +23,16 @@ public class Game {
     private Point firstPlayerLastPoint = new Point(-1, -1);
     private Point secondPlayerLastPoint = new Point(-1, -1);
 
-    public Game(@NonNull Integer boardSize) {
+    private final MongoService mongoService;
+
+    public Game(@NonNull Integer boardSize, @NonNull MongoService mongoService) {
 
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
         if (boardSize < 5) {
             throw new IllegalArgumentException("The board size should be at least 5");
         }
+
+        this.mongoService = mongoService;
 
         this.gameUtils = new GameUtils();
         this.board = gameUtils.createEmptyBoard(boardSize);
@@ -153,7 +158,7 @@ public class Game {
     }
 
     public Point calculateNextMove(@NonNull Players player) {
-        return gameUtils.calculateNextMove(player, computerBoard);
+        return mongoService.getProbabilityMove(player, computerBoard);
     }
 
 }

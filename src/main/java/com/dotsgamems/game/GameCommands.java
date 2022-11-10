@@ -1,18 +1,26 @@
 package com.dotsgamems.game;
 
+import com.dotsgamems.mongo.MongoService;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.stereotype.Service;
 
 @ShellComponent
 public class GameCommands {
 
     private Game game;
 
+    @Autowired
+    private MongoService mongoService;
+
     @ShellMethod("Start game")
     public String start(@ShellOption(help = "Board size") int boardSize) {
-        game = new Game(boardSize);
+        game = new Game(boardSize, mongoService);
         return game.printComputerBoard();
     }
 
@@ -38,12 +46,12 @@ public class GameCommands {
         return game.printComputerBoard();
     }
 
-    @ShellMethod("Player movement")
+    @ShellMethod("Train computer vs computer")
     public String train(@ShellOption(help = "Board size") int boardSize,
                         @ShellOption(help = "Number of epoch to train") int epoch) {
 
         for (int i = 0; i < epoch; i++) {
-            game = new Game(boardSize);
+            game = new Game(boardSize, mongoService);
             while (!game.isGameFinished()) {
                 val firstPlayerMove = game.calculateNextMove(Players.FIRST);
                 game.makeMove(Players.FIRST, firstPlayerMove.x, firstPlayerMove.y);
