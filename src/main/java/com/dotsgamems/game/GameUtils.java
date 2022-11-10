@@ -281,4 +281,14 @@ public class GameUtils {
         return true;
     }
 
+    public static String transformBoardToString(@NonNull String[][] board) {
+        val result = new StringBuilder();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                result.append(board[i][j]);
+            }
+        }
+        return result.toString();
+    }
+
 }

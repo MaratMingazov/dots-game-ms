@@ -1,5 +1,6 @@
 package com.dotsgamems.mongo;
 
+import com.dotsgamems.game.GameUtils;
 import com.dotsgamems.game.Players;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class MongoService {
             downloadMongoBoards(board.length);
         }
 
-        val boardString = transformBoardToString(board);
+        val boardString = GameUtils.transformBoardToString(board);
         MongoBoard mongoBoard;
         if (mongoBoardsMap.containsKey(boardString)) {
             mongoBoard = mongoBoardsMap.get(boardString);
@@ -75,17 +76,6 @@ public class MongoService {
             }
         }
         return result;
-    }
-
-
-    public String transformBoardToString(@NonNull String[][] board) {
-        val result = new StringBuilder();
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                result.append(board[i][j]);
-            }
-        }
-        return result.toString();
     }
 
     public String[][] transformBoardToArray(@NonNull Integer boardSize, @NonNull String board) {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -46,6 +47,40 @@ public class GameUtilsTest {
         val actualDots = gameUtils.findCapturedEmptyDots(board, capturedDots);
 
         assertTrue(isEqualDots(actualDots, expectedDots));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInputsForRTransformBoardToString")
+    void testTransformBoardToString(@NonNull String[][] board, @NonNull String expectedBoard ) {
+        val actualBoard = GameUtils.transformBoardToString(board);
+        assertEquals(actualBoard, expectedBoard);
+    }
+
+    private static Stream<Arguments> provideInputsForRTransformBoardToString() {
+
+        /**
+         * 0110
+         * 1201
+         * 1200
+         * 0111
+         */
+        val board1 = createBoard(4);
+        board1[0][1] = Players.FIRST.getDotLabel();
+        board1[0][2] = Players.FIRST.getDotLabel();
+        board1[1][0] = Players.FIRST.getDotLabel();
+        board1[1][1] = Players.SECOND.getDotLabel();
+        board1[1][3] = Players.FIRST.getDotLabel();
+        board1[2][0] = Players.FIRST.getDotLabel();
+        board1[2][1] = Players.SECOND.getDotLabel();
+        board1[3][1] = Players.FIRST.getDotLabel();
+        board1[3][2] = Players.FIRST.getDotLabel();
+        board1[3][3] = Players.FIRST.getDotLabel();
+        val expectedBoard1 = "0110120112000111";
+
+
+        return Stream.of(
+                Arguments.of(board1, expectedBoard1)
+        );
     }
 
     private static Stream<Arguments> provideInputsForFindCapturedEmptyDots() {
