@@ -27,18 +27,32 @@ public class GameCommands {
         }
         val player = Players.getById(id);
         val oppositePlayer = Players.getOppositeById(id);
-        game.setDot(player, x, y);
-        game.updateCapturedDots(player);
-        game.updateCapturedDots(oppositePlayer);
+        game.makeMove(player, x, y);
 
         if (game.isGameFinished()) {
             return game.printComputerBoard();
         }
         val oppositePlayerMove = game.calculateNextMove(oppositePlayer);
-        game.setDot(oppositePlayer, oppositePlayerMove.x, oppositePlayerMove.y);
-        game.updateCapturedDots(oppositePlayer);
-        game.updateCapturedDots(player);
+        game.makeMove(oppositePlayer, oppositePlayerMove.x, oppositePlayerMove.y);
 
+        return game.printComputerBoard();
+    }
+
+    @ShellMethod("Player movement")
+    public String train(@ShellOption(help = "Board size") int boardSize,
+                        @ShellOption(help = "Number of epoch to train") int epoch) {
+
+        for (int i = 0; i < epoch; i++) {
+            game = new Game(boardSize);
+            while (!game.isGameFinished()) {
+                val firstPlayerMove = game.calculateNextMove(Players.FIRST);
+                game.makeMove(Players.FIRST, firstPlayerMove.x, firstPlayerMove.y);
+                if (!game.isGameFinished()) {
+                    val secondPlayer = game.calculateNextMove(Players.SECOND);
+                    game.makeMove(Players.SECOND, secondPlayer.x, secondPlayer.y);
+                }
+            }
+        }
         return game.printComputerBoard();
     }
 

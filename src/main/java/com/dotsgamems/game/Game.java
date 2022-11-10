@@ -101,13 +101,6 @@ public class Game {
             }
             result.append("\n");
         }
-//        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-//        val a = AnsiOutput.toString(AnsiColor.MAGENTA, " a ", AnsiColor.DEFAULT);
-//        val b = AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, " b ", AnsiColor.DEFAULT);
-//        val c = AnsiOutput.toString(AnsiColor.CYAN, " a ", AnsiColor.DEFAULT);
-//        val d = AnsiOutput.toString(AnsiColor.BRIGHT_CYAN, " b ", AnsiColor.DEFAULT);
-//        result.append(a).append(b);
-//        result.append(c).append(d);
         result.append("\n");
         val score = calculateScore();
         result.append(score.get(Players.FIRST)).append(" : ").append(score.get(Players.SECOND)).append("\n");
@@ -117,6 +110,13 @@ public class Game {
         }
 
         return result.toString();
+    }
+
+    public void makeMove(@NonNull Players player, int x, int y) {
+        val oppositePlayer = Players.getOppositeById(player.getId());
+        setDot(player, x, y);
+        updateCapturedDots(player);
+        updateCapturedDots(oppositePlayer);
     }
 
     public void updateCapturedDots(@NonNull Players player) {
