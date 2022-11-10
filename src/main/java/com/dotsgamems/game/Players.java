@@ -37,4 +37,8 @@ public enum Players {
             default: throw new IllegalArgumentException("The Player with given id does not exists");
         }
     }
+
+    public Integer getId() {
+        return this.id;
+    }
 }

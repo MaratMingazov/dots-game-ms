@@ -179,12 +179,14 @@ public class GameUtils {
         List<Point> capturedDots = new ArrayList<>();
         List<Point> notCapturedDots = new ArrayList<>();
 
+        // we should find all opposite player dots
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (board[i][j].equals(player.getDotLabel()) || board[i][j].equals(Players.getEmptyDotLabel())) {
                     // It means the given dot belong to player or empty. It can not be captured
                     continue;
                 }
+                // from every dot we try to find path to board border
                 val dot = new Point(i, j);
                 List<Point> visitedDots = new ArrayList<>(); // when we will search path we should know which dots we already analyzed
                 if (isDotCaptured(player, board, capturedDots, notCapturedDots, visitedDots, dot)) {
@@ -218,7 +220,7 @@ public class GameUtils {
         if (board.length < 3 || board[0].length < 3) {
             return false;
         }
-        if (dot.x == 0 || dot.x == board.length || dot.y == 0 || dot.y == board[0].length) {
+        if (dot.x == 0 || dot.x == board.length-1 || dot.y == 0 || dot.y == board[0].length-1) {
             // it means the given dot located on border and can't be captured
             return false;
         }

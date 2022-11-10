@@ -41,7 +41,7 @@ public class GameUtilsTest {
 
     @ParameterizedTest
     @MethodSource("provideInputsForFindCapturedEmptyDots")
-    void testFindCapturedDots(@NonNull String[][] board, @NonNull List<Point> capturedDots, @NonNull List<Point> expectedDots ) {
+    void testFindCapturedEmptyDots(@NonNull String[][] board, @NonNull List<Point> capturedDots, @NonNull List<Point> expectedDots ) {
         val gameUtils = new GameUtils();
         val actualDots = gameUtils.findCapturedEmptyDots(board, capturedDots);
 
@@ -118,12 +118,28 @@ public class GameUtilsTest {
         expectedDots4.add(new Point(4,3));
 
 
+        /**
+         * 00000
+         * 00000
+         * 00001
+         * 00010
+         * 00102
+         */
+        val givenBoard5 = createBoard(5);
+        givenBoard5[2][4] = Players.FIRST.getDotLabel();
+        givenBoard5[3][3] = Players.FIRST.getDotLabel();
+        givenBoard5[4][2] = Players.FIRST.getDotLabel();
+        givenBoard5[4][4] = Players.SECOND.getDotLabel();
+        List<Point> expectedDots5 = new ArrayList<>();
+
+
 
         return Stream.of(
                 Arguments.of(Players.FIRST, givenBoard1, expectedDots1),
                 Arguments.of(Players.FIRST, givenBoard2, expectedDots2),
                 Arguments.of(Players.FIRST, givenBoard3, expectedDots3),
-                Arguments.of(Players.FIRST, givenBoard4, expectedDots4)
+                Arguments.of(Players.FIRST, givenBoard4, expectedDots4),
+                Arguments.of(Players.FIRST, givenBoard5, expectedDots5)
         );
     }
 
