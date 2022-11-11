@@ -144,14 +144,7 @@ public class Game {
     }
 
     public boolean isGameFinished() {
-        for (int i = 0; i < computerBoard.length; i++) {
-            for (int j = 0; j < computerBoard[i].length; j++) {
-                if (computerBoard[i][j].equals(Players.getEmptyDotLabel())) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return GameUtils.isGameFinished(computerBoard);
     }
 
     public Map<Players,Integer> calculateScore() {

@@ -36,7 +36,7 @@ public class MongoServiceTest {
     @ParameterizedTest
     @MethodSource("provideInputsForRTransformBoardToArray")
     void testTransformBoardToArray(@NonNull Integer boardSize, @NonNull String boardString, @NonNull String[][] expectedBoard ) {
-        val actualBoard = mongoService.transformBoardToArray(boardSize, boardString);
+        val actualBoard = GameUtils.transformBoardToArray(boardSize, boardString);
         assertTrue(boardsAreEqual(actualBoard, expectedBoard));
     }
 

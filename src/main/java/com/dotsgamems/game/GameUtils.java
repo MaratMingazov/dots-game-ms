@@ -305,4 +305,15 @@ public class GameUtils {
         return result;
     }
 
+    public static boolean isGameFinished(@NonNull String[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j].equals(Players.getEmptyDotLabel())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }
