@@ -123,12 +123,8 @@ public class Game {
         }
 
         setDot(player, x, y);
-        updateCapturedDots(player);
-        updateCapturedDots(oppositePlayer);
-    }
-
-    public void updateCapturedDots(@NonNull Players player) {
         GameUtils.updateCapturedDots(player, computerBoard);
+        GameUtils.updateCapturedDots(oppositePlayer, computerBoard);
     }
 
     public boolean isGameFinished() {
