@@ -80,20 +80,6 @@ public class MongoService {
         return result;
     }
 
-    public String[][] transformBoardToArray(@NonNull Integer boardSize, @NonNull String board) {
-        if (board.length() != boardSize * boardSize) {
-            throw new IllegalArgumentException("Given boardSize is not correct.");
-        }
-        val result = new String[boardSize][boardSize];
-        for (int i = 0; i < result.length; i++) {
-            for (int j = 0; j < result[i].length; j++) {
-                int beginIndex = i * boardSize + j;
-                result[i][j] = board.substring(beginIndex, beginIndex + 1);
-            }
-        }
-        return result;
-    }
-
     public void increaseProbabilities(@NonNull Players player, @NonNull Map<String, Point> history) {
         for (Map.Entry<String, Point> entry : history.entrySet()) {
             val board = entry.getKey();
