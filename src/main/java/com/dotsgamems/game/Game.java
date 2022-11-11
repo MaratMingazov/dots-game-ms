@@ -8,7 +8,8 @@ import lombok.val;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 
-import java.awt.*;
+import java.awt.Point;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -24,6 +25,9 @@ public class Game {
     private Point secondPlayerLastPoint = new Point(-1, -1);
 
     private final MongoService mongoService;
+
+    private Map<String, Point> firstPlayerHistory = new HashMap<>();
+    private Map<String, Point> secondPlayerHistory = new HashMap<>();
 
     public Game(@NonNull Integer boardSize, @NonNull MongoService mongoService) {
 
@@ -119,6 +123,14 @@ public class Game {
 
     public void makeMove(@NonNull Players player, int x, int y) {
         val oppositePlayer = Players.getOppositeById(player.getId());
+
+        val boardString = GameUtils.transformBoardToString(computerBoard);
+        if (player == Players.FIRST) {
+            firstPlayerHistory.put(boardString, new Point(x,y));
+        } else {
+            secondPlayerHistory.put(boardString, new Point(x,y));
+        }
+
         setDot(player, x, y);
         updateCapturedDots(player);
         updateCapturedDots(oppositePlayer);
@@ -159,6 +171,22 @@ public class Game {
 
     public Point calculateNextMove(@NonNull Players player) {
         return mongoService.getProbabilityMove(player, computerBoard);
+    }
+
+    public void updateStatistics(int index, int epoch) {
+        val score = calculateScore();
+        val firstPlayerScore = score.get(Players.FIRST);
+        val secondPlayerScore = score.get(Players.SECOND);
+//        log.info("Game score: " + firstPlayerScore + " / " + secondPlayerScore);
+//        log.info(index + " / " + epoch);
+
+        if (firstPlayerScore > secondPlayerScore) {
+            mongoService.increaseProbabilities(Players.FIRST, firstPlayerHistory);
+            mongoService.decreaseProbabilities(Players.SECOND, secondPlayerHistory);
+        } else if (firstPlayerScore < secondPlayerScore) {
+            mongoService.decreaseProbabilities(Players.FIRST, firstPlayerHistory);
+            mongoService.increaseProbabilities(Players.SECOND, secondPlayerHistory);
+        }
     }
 
 }

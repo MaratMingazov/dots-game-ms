@@ -1,12 +1,10 @@
 package com.dotsgamems.mongo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -15,26 +13,39 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Document(collection = "board")
 public class MongoBoard {
 
     @Id
     String id;
 
-    @NonNull
+    @Field("boardSize")
     private Integer boardSize;
 
-    @NonNull
+
+    @Field("board")
     private String board;
 
-    @NonNull
+
+    @Field("firstPlayerMoves")
     List<MongoMove> firstPlayerMoves;
 
-    @NonNull
+
+    @Field("secondPlayerMoves")
     List<MongoMove> secondPlayerMoves;
 
     @Transient
     boolean isChanged = false;
+
+
+    public MongoBoard(String id, Integer boardSize, String board, List<MongoMove> firstPlayerMoves, List<MongoMove> secondPlayerMoves) {
+        this.id = id;
+        this.boardSize = boardSize;
+        this.board = board;
+        this.firstPlayerMoves = firstPlayerMoves;
+        this.secondPlayerMoves = secondPlayerMoves;
+    }
 
     public MongoBoard (@NonNull String board, @NonNull Integer boardSize, @NonNull List<Point> availableMoves) {
         this.boardSize = boardSize;

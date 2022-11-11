@@ -1,14 +1,11 @@
 package com.dotsgamems.game;
 
 import com.dotsgamems.mongo.MongoService;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.stereotype.Service;
 
 @ShellComponent
 public class GameCommands {
@@ -60,7 +57,9 @@ public class GameCommands {
                     game.makeMove(Players.SECOND, secondPlayer.x, secondPlayer.y);
                 }
             }
+            game.updateStatistics(i, epoch);
         }
+        mongoService.saveMongoBoards();
         return game.printComputerBoard();
     }
 

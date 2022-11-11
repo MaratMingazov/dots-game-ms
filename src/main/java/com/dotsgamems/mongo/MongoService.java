@@ -28,10 +28,12 @@ public class MongoService {
     private Random random = new Random();
 
     private void downloadMongoBoards(@NonNull Integer boardSize) {
+        log.info("Starting download mongoBoards");
         Query query = new Query();
         query.addCriteria(Criteria.where("boardSize").is(boardSize));
         val mongoBoards = mongoTemplate.find(query, MongoBoard.class);
         mongoBoards.forEach(mongoBoard -> mongoBoardsMap.put(mongoBoard.getBoard(), mongoBoard));
+        log.info("Successfully downloaded mongoBoards: " + mongoBoards.size());
     }
 
     /**
@@ -90,5 +92,54 @@ public class MongoService {
             }
         }
         return result;
+    }
+
+    public void increaseProbabilities(@NonNull Players player, @NonNull Map<String, Point> history) {
+        for (Map.Entry<String, Point> entry : history.entrySet()) {
+            val board = entry.getKey();
+            val point = entry.getValue();
+            val mongoBoard = mongoBoardsMap.get(board);
+            mongoBoard.setChanged(true);
+            val mongoMoves = player == Players.FIRST ? mongoBoard.getFirstPlayerMoves() : mongoBoard.getSecondPlayerMoves();
+            for (MongoMove mongoMove : mongoMoves) {
+                if (mongoMove.getX() == point.x && mongoMove.getY() == point.y) {
+                    mongoMove.setProbability(mongoMove.getProbability() + 1);
+                }
+            }
+        }
+    }
+
+    public void decreaseProbabilities(@NonNull Players player, @NonNull Map<String, Point> history) {
+        for (Map.Entry<String, Point> entry : history.entrySet()) {
+            val board = entry.getKey();
+            val point = entry.getValue();
+            val mongoBoard = mongoBoardsMap.get(board);
+            mongoBoard.setChanged(true);
+            val mongoMoves = player == Players.FIRST ? mongoBoard.getFirstPlayerMoves() : mongoBoard.getSecondPlayerMoves();
+            for (MongoMove mongoMove : mongoMoves) {
+                if (mongoMove.getX() == point.x && mongoMove.getY() == point.y) {
+                    mongoMove.setProbability(mongoMove.getProbability() - 1);
+                    if (mongoMove.getProbability() < 1) {
+                        mongoMove.setProbability(1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void saveMongoBoards() {
+        log.info("Starting to save mongoBoards");
+        int index = 0;
+        int savedBoardsCount = 0;
+        for (Map.Entry<String, MongoBoard> entry : mongoBoardsMap.entrySet()) {
+            index++;
+            val mongoBoard = entry.getValue();
+            if (mongoBoard.isChanged) {
+                mongoTemplate.save(mongoBoard);
+                savedBoardsCount++;
+            }
+            log.info(index + " / " + mongoBoardsMap.size());
+        }
+        log.info("Successfully saved mongoBoards count: " + savedBoardsCount);
     }
 }

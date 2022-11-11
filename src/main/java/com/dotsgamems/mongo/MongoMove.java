@@ -1,9 +1,11 @@
 package com.dotsgamems.mongo;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
+@Data
+@Builder
 @AllArgsConstructor
 public class MongoMove {
 
