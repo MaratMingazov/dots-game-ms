@@ -6,6 +6,7 @@ import lombok.val;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GameUtils {
 
@@ -17,7 +18,7 @@ public class GameUtils {
      * @return new board with removed tail dots
      */
     @NonNull
-    public String[][] removeTailDots(@NonNull Players player,
+    public static String[][] removeTailDots(@NonNull Players player,
                                      @NonNull String[][] board) {
         val copyBoard = copyBoard(board);
         boolean needNewIteration;
@@ -27,7 +28,7 @@ public class GameUtils {
         return copyBoard;
     }
 
-    private boolean removeTailDotsIteration(@NonNull Players player,
+    private static boolean removeTailDotsIteration(@NonNull Players player,
                                             @NonNull String[][] board) {
         boolean needNewIteration = false;
         val dotLabel = player.getDotLabel();
@@ -78,7 +79,7 @@ public class GameUtils {
      * @param y point second parameter
      * @return true in case of given point belong to the board
      */
-    public boolean isPointBelongToBoard(@NonNull String[][] board, int x, int y) {
+    public static boolean isPointBelongToBoard(@NonNull String[][] board, int x, int y) {
         if (x < 0 || x >= board.length) {
             return false;
         }
@@ -93,7 +94,7 @@ public class GameUtils {
      * @param sourceBoard given board
      * @return new copy of board
      */
-    public String[][] copyBoard(@NonNull String[][] sourceBoard) {
+    public static String[][] copyBoard(@NonNull String[][] sourceBoard) {
         if (sourceBoard.length < 1) {
             throw new IllegalArgumentException("The given board should not be empty.");
         }
@@ -106,7 +107,7 @@ public class GameUtils {
         return copyBoard;
     }
 
-    public String[][] createEmptyBoard(int boardSize) {
+    public static String[][] createEmptyBoard(int boardSize) {
         String[][] board = new String[boardSize][boardSize];
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
@@ -123,7 +124,7 @@ public class GameUtils {
      * @param capturedPlayerDots given captured player dots
      * @return list of captured empty dots
      */
-    public List<Point> findCapturedEmptyDots(@NonNull String[][] board,
+    public static List<Point> findCapturedEmptyDots(@NonNull String[][] board,
                                              @NonNull List<Point> capturedPlayerDots) {
         List<Point> capturedEmptyDots = new ArrayList<>();
         List<Point> checkedEmptyDots = new ArrayList<>();
@@ -136,7 +137,7 @@ public class GameUtils {
         return capturedEmptyDots;
     }
 
-    private List<Point> checkEmptyCapturedDots(@NonNull String[][] board,
+    private static List<Point> checkEmptyCapturedDots(@NonNull String[][] board,
                                               @NonNull List<Point> checkedEmptyDots,
                                               @NonNull Point dot) {
         List<Point> capturedEmptyDots = new ArrayList<>();
@@ -171,7 +172,7 @@ public class GameUtils {
      * @param board given board
      * @return list of all captured dots of opposite player
      */
-    public List<Point> findCapturedDots(@NonNull Players player,
+    public static List<Point> findCapturedDots(@NonNull Players player,
                                         @NonNull String[][] board){
         List<Point> capturedDots = new ArrayList<>();
         List<Point> notCapturedDots = new ArrayList<>();
@@ -208,7 +209,7 @@ public class GameUtils {
      * @param dot given dot that we need to check being captured. Here we have only opposite player dots
      * @return 'true' if the given dot is captured by player and 'false' otherwise
      */
-    private boolean isDotCaptured(@NonNull Players player,
+    private static boolean isDotCaptured(@NonNull Players player,
                                   @NonNull String[][] board,
                                   @NonNull List<Point> capturedDots,
                                   @NonNull List<Point> notCapturedDots,
@@ -256,7 +257,7 @@ public class GameUtils {
         return true;
     }
 
-    private boolean isNextDotCaptured(@NonNull Players player,
+    private static boolean isNextDotCaptured(@NonNull Players player,
                                       @NonNull String[][] board,
                                       @NonNull List<Point> capturedDots,
                                       @NonNull List<Point> notCapturedDots,
@@ -314,6 +315,43 @@ public class GameUtils {
             }
         }
         return true;
+    }
+
+    public static Map<Players,Integer> calculateScore(String[][] humanBoard, String[][]computerBoard) {
+        int firstPlayerScore = 0;
+        int secondPlayerScore = 0;
+        for (int i = 0; i < computerBoard.length; i++) {
+            for (int j = 0; j < computerBoard[i].length; j++) {
+                if (computerBoard[i][j].equals(Players.FIRST.getDotLabel()) && humanBoard[i][j].equals(Players.SECOND.getDotLabel())) {
+                    firstPlayerScore++;
+                } else if (computerBoard[i][j].equals(Players.SECOND.getDotLabel()) && humanBoard[i][j].equals(Players.FIRST.getDotLabel())) {
+                    secondPlayerScore++;
+                }
+            }
+        }
+        return Map.of(Players.FIRST, firstPlayerScore, Players.SECOND, secondPlayerScore);
+    }
+
+    public static String[][] updateCapturedDots(@NonNull Players player, @NonNull String[][] board) {
+        val capturedDots = findCapturedDots(player, board);
+        val capturedEmptyDots = findCapturedEmptyDots(board, capturedDots);
+        capturedDots.forEach(dot -> board[dot.x][dot.y] = player.getDotLabel());
+        capturedEmptyDots.forEach(dot -> board[dot.x][dot.y] = player.getDotLabel());
+        return board;
+    }
+
+    public static void setDot(@NonNull Players player,
+                              @NonNull String[][] humanBoard,
+                              @NonNull String[][] computerBoard,
+                              int x, int y) {
+        if (!isPointBelongToBoard(humanBoard, x, y)) {
+            throw new IllegalArgumentException("The given point is out of boarder: " + x + "," + y);
+        }
+        if (!computerBoard[x][y].equals(Players.getEmptyDotLabel())) {
+            throw new IllegalArgumentException("The board already have dot at this point: " + x + "," + y);
+        }
+        humanBoard[x][y] = player.getDotLabel();
+        computerBoard[x][y] = player.getDotLabel();
     }
 
 }

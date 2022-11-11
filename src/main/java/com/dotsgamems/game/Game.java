@@ -19,7 +19,6 @@ public class Game {
 
     private final String[][] board;
     private final String[][] computerBoard;
-    private final GameUtils gameUtils;
 
     private Point firstPlayerLastPoint = new Point(-1, -1);
     private Point secondPlayerLastPoint = new Point(-1, -1);
@@ -38,9 +37,8 @@ public class Game {
 
         this.mongoService = mongoService;
 
-        this.gameUtils = new GameUtils();
-        this.board = gameUtils.createEmptyBoard(boardSize);
-        this.computerBoard = gameUtils.createEmptyBoard(boardSize);
+        this.board = GameUtils.createEmptyBoard(boardSize);
+        this.computerBoard = GameUtils.createEmptyBoard(boardSize);
 
         int middlePoint = boardSize/2;
         board[middlePoint][middlePoint - 1] = Players.FIRST.getDotLabel();
@@ -59,14 +57,7 @@ public class Game {
     }
 
     public void setDot(@NonNull Players player, int x, int y) {
-        if(x < 0 || x >= board.length || y < 0 || y >= board.length) {
-            throw new IllegalArgumentException("The given point is out of boarder: " + x + "," + y);
-        }
-        if (!computerBoard[x][y].equals(Players.getEmptyDotLabel())) {
-            throw new IllegalArgumentException("The board already have dot at this point: " + x + "," + y);
-        }
-        board[x][y] = player.getDotLabel();
-        computerBoard[x][y] = player.getDotLabel();
+        GameUtils.setDot(player, board, computerBoard, x, y);
         if (player == Players.FIRST) {
             firstPlayerLastPoint.x = x;
             firstPlayerLastPoint.y = y;
@@ -137,10 +128,7 @@ public class Game {
     }
 
     public void updateCapturedDots(@NonNull Players player) {
-        val capturedDots = gameUtils.findCapturedDots(player, computerBoard);
-        val capturedEmptyDots = gameUtils.findCapturedEmptyDots(computerBoard, capturedDots);
-        capturedDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
-        capturedEmptyDots.forEach(dot -> computerBoard[dot.x][dot.y] = player.getDotLabel());
+        GameUtils.updateCapturedDots(player, computerBoard);
     }
 
     public boolean isGameFinished() {
@@ -148,18 +136,7 @@ public class Game {
     }
 
     public Map<Players,Integer> calculateScore() {
-        int firstPlayerScore = 0;
-        int secondPlayerScore = 0;
-        for (int i = 0; i < computerBoard.length; i++) {
-            for (int j = 0; j < computerBoard[i].length; j++) {
-                if (computerBoard[i][j].equals(Players.FIRST.getDotLabel()) && board[i][j].equals(Players.SECOND.getDotLabel())) {
-                    firstPlayerScore++;
-                } else if (computerBoard[i][j].equals(Players.SECOND.getDotLabel()) && board[i][j].equals(Players.FIRST.getDotLabel())) {
-                    secondPlayerScore++;
-                }
-            }
-        }
-        return Map.of(Players.FIRST, firstPlayerScore, Players.SECOND, secondPlayerScore);
+        return GameUtils.calculateScore(board, computerBoard);
     }
 
     public Point calculateNextMove(@NonNull Players player) {
@@ -170,8 +147,6 @@ public class Game {
         val score = calculateScore();
         val firstPlayerScore = score.get(Players.FIRST);
         val secondPlayerScore = score.get(Players.SECOND);
-//        log.info("Game score: " + firstPlayerScore + " / " + secondPlayerScore);
-//        log.info(index + " / " + epoch);
 
         if (firstPlayerScore > secondPlayerScore) {
             mongoService.increaseProbabilities(Players.FIRST, firstPlayerHistory);
