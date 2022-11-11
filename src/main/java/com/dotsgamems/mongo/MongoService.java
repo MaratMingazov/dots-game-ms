@@ -54,7 +54,7 @@ public class MongoService {
         if (mongoBoardsMap.containsKey(boardString)) {
             mongoBoard = mongoBoardsMap.get(boardString);
         } else {
-            mongoBoard = new MongoBoard(boardString, board.length, getAvailableMoves(board));
+            mongoBoard = new MongoBoard(boardString, board.length, GameUtils.getAvailableMoves(board));
             mongoBoardsMap.put(boardString, mongoBoard);
         }
         val mongoMoves = player == Players.FIRST ? mongoBoard.getFirstPlayerMoves() : mongoBoard.getSecondPlayerMoves();
@@ -66,18 +66,6 @@ public class MongoService {
         }
         int value = random.nextInt(probabilityMoves.size());
         return probabilityMoves.get(value);
-    }
-
-    private List<Point> getAvailableMoves(@NonNull String[][] board) {
-        List<Point> result = new ArrayList<>();
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if(board[i][j].equals(Players.getEmptyDotLabel())) {
-                    result.add(new Point(i,j));
-                }
-            }
-        }
-        return result;
     }
 
     public void increaseProbabilities(@NonNull Players player, @NonNull Map<String, Point> history) {

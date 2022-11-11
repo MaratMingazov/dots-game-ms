@@ -354,4 +354,16 @@ public class GameUtils {
         computerBoard[x][y] = player.getDotLabel();
     }
 
+    public static List<Point> getAvailableMoves(@NonNull String[][] board) {
+        List<Point> result = new ArrayList<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if(board[i][j].equals(Players.getEmptyDotLabel())) {
+                    result.add(new Point(i,j));
+                }
+            }
+        }
+        return result;
+    }
+
 }
