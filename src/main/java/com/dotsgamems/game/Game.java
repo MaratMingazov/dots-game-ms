@@ -138,9 +138,22 @@ public class Game {
     }
 
     public Point calculateNextMove(@NonNull Players player) {
-        val badMoves = GameUtils.findBadMoves(player, computerBoard.length, GameUtils.transformBoardToString(board), GameUtils.transformBoardToString(computerBoard));
 
         var probabilityMove = mongoService.getProbabilityMove(player, computerBoard);
+
+        val availableMoves =  GameUtils.getAvailableMoves(computerBoard);
+        if (availableMoves.size() < 9) {
+            // MINIMAX ALGORITHM
+            MiniMax.IterationsCount = 0;
+            val result = MiniMax.findTheBestMove(player,
+                                                 GameUtils.transformBoardToString(board),
+                                                 GameUtils.transformBoardToString(computerBoard),
+                                                 computerBoard.length, 0);
+            //log.info("Iterations: " + MiniMax.IterationsCount + ", move: " + result + " / " + player);
+            return result.getFirst();
+        }
+
+        val badMoves = GameUtils.findBadMoves(player, computerBoard.length, GameUtils.transformBoardToString(board), GameUtils.transformBoardToString(computerBoard));
 
         if (!badMoves.isEmpty()) {
             mongoService.decreaseProbability(player, GameUtils.transformBoardToString(computerBoard), badMoves);
@@ -150,14 +163,7 @@ public class Game {
         return probabilityMove;
 
 
-//        // MINIMAX ALGORITHM
-//        MiniMax.IterationsCount = 0;
-//        val result = MiniMax.findTheBestMove(player,
-//                                GameUtils.transformBoardToString(board),
-//                                GameUtils.transformBoardToString(computerBoard),
-//                                computerBoard.length, 0);
-//        log.info("Iterations: " + MiniMax.IterationsCount + ", move: " + result);
-//        return result.getFirst();
+
     }
 
     public void updateStatistics(int index, int epoch) {

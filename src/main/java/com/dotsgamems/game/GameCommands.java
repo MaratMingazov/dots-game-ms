@@ -35,6 +35,7 @@ public class GameCommands {
         game.makeMove(player, x, y);
 
         if (game.isGameFinished()) {
+            mongoService.saveMongoBoards();
             return game.printComputerBoard();
         }
         val oppositePlayerMove = game.calculateNextMove(oppositePlayer);

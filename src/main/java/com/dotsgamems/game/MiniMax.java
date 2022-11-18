@@ -45,9 +45,9 @@ public class MiniMax {
             GameUtils.updateCapturedDots(oppositePlayer, computerBoard);
 
 
-            if (depth == 0) {
-                logger.info(" start " + move);
-            }
+//            if (depth == 0) {
+//                logger.info(" start " + move);
+//            }
 
             Map<Players, Integer> scoreMap = new HashMap<>();
             // if (GameUtils.isGameFinished(computerBoard) || depth >= MAX_DEPTH || IterationsCount > MAX_ITERATIONS) {
@@ -58,9 +58,9 @@ public class MiniMax {
                 val scorePair = findTheBestMove(oppositePlayer, GameUtils.transformBoardToString(humanBoard), GameUtils.transformBoardToString(computerBoard), computerBoard.length, depth + 1);
                 scoreMap = scorePair.getSecond();
             }
-            if (depth == 0) {
-                logger.info(move + " / " + scoreMap);
-            }
+//            if (depth == 0) {
+//                logger.info(move + " / " + scoreMap);
+//            }
             val score = player == Players.FIRST ? scoreMap.get(Players.FIRST) - scoreMap.get(Players.SECOND) : scoreMap.get(Players.SECOND) - scoreMap.get(Players.FIRST);
             if (score > bestScore) {
                 bestMove = move;
