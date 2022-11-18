@@ -122,6 +122,19 @@ public class MongoService {
         }
     }
 
+    public void decreaseProbability(@NonNull Players player, @NonNull String board, List<Point> badMoves) {
+        val mongoBoard = mongoBoardsMap.get(board);
+        mongoBoard.setChanged(true);
+        val mongoMoves = player == Players.FIRST ? mongoBoard.getFirstPlayerMoves() : mongoBoard.getSecondPlayerMoves();
+        for (MongoMove mongoMove : mongoMoves) {
+            for (Point badMove : badMoves) {
+                if (mongoMove.getX() == badMove.x && mongoMove.getY() == badMove.y) {
+                    mongoMove.setProbability(1);
+                }
+            }
+        }
+    }
+
     public void saveMongoBoards() {
         log.info("Starting to save mongoBoards");
         int index = 0;

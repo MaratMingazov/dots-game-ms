@@ -138,7 +138,16 @@ public class Game {
     }
 
     public Point calculateNextMove(@NonNull Players player) {
-        return mongoService.getProbabilityMove(player, computerBoard);
+        val badMoves = GameUtils.findBadMoves(player, computerBoard.length, GameUtils.transformBoardToString(board), GameUtils.transformBoardToString(computerBoard));
+
+        var probabilityMove = mongoService.getProbabilityMove(player, computerBoard);
+
+        if (!badMoves.isEmpty()) {
+            mongoService.decreaseProbability(player, GameUtils.transformBoardToString(computerBoard), badMoves);
+            probabilityMove = mongoService.getProbabilityMove(player, computerBoard);
+        }
+
+        return probabilityMove;
 
 
 //        // MINIMAX ALGORITHM

@@ -366,4 +366,39 @@ public class GameUtils {
         return result;
     }
 
+    public static List<Point> findBadMoves(@NonNull Players player,
+                                           @NonNull Integer boardSize,
+                                           @NonNull String humanBoardString,
+                                           @NonNull String computerBoardString) {
+        List<Point> badMoves = new ArrayList<>();
+        var humanBoard = transformBoardToArray(boardSize, humanBoardString);
+        var computerBoard = transformBoardToArray(boardSize, computerBoardString);
+        var gameScore = calculateScore(humanBoard, computerBoard);
+        val oppositePlayer = Players.getOppositeById(player.getId());
+        val oppositePlayerScore = gameScore.get(oppositePlayer);
+
+        val availableMoves = getAvailableMoves(computerBoard);
+        if (availableMoves.isEmpty()) {
+            return badMoves;
+        }
+
+        for (Point move : availableMoves) {
+            humanBoard = GameUtils.transformBoardToArray(boardSize, humanBoardString);
+            computerBoard = GameUtils.transformBoardToArray(boardSize, computerBoardString);
+            GameUtils.setDot(player, humanBoard, computerBoard, move.x, move.y);
+            GameUtils.updateCapturedDots(player, computerBoard);
+            GameUtils.updateCapturedDots(oppositePlayer, computerBoard);
+
+            gameScore = calculateScore(humanBoard, computerBoard);
+            val oppositePlayerNewScore = gameScore.get(oppositePlayer);
+
+            if (oppositePlayerNewScore > oppositePlayerScore) {
+                badMoves.add(move);
+            }
+        }
+
+
+        return badMoves;
+    }
+
 }
