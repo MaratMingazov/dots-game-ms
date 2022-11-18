@@ -46,6 +46,8 @@ public class Game {
         computerBoard[middlePoint][middlePoint - 1] = Players.FIRST.getDotLabel();
         computerBoard[middlePoint - 1][middlePoint] = Players.SECOND.getDotLabel();
 
+        log.info(GameUtils.transformBoardToString(computerBoard));
+
     }
 
     public String printBoard() {
@@ -153,6 +155,7 @@ public class Game {
         val score = calculateScore();
         val firstPlayerScore = score.get(Players.FIRST);
         val secondPlayerScore = score.get(Players.SECOND);
+        log.info(calculateScore());
 
         if (firstPlayerScore > secondPlayerScore) {
             mongoService.increaseProbabilities(Players.FIRST, firstPlayerHistory);
@@ -161,6 +164,7 @@ public class Game {
             mongoService.decreaseProbabilities(Players.FIRST, firstPlayerHistory);
             mongoService.increaseProbabilities(Players.SECOND, secondPlayerHistory);
         }
+        mongoService.logBoardProbabilities("0000000000000000000000000000000000000000000002000000001000000000000000000000000000000000000000000000");
     }
 
 }

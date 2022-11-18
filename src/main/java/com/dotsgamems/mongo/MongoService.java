@@ -2,6 +2,7 @@ package com.dotsgamems.mongo;
 
 import com.dotsgamems.game.GameUtils;
 import com.dotsgamems.game.Players;
+import com.mongodb.lang.Nullable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,8 +33,23 @@ public class MongoService {
         Query query = new Query();
         query.addCriteria(Criteria.where("boardSize").is(boardSize));
         val mongoBoards = mongoTemplate.find(query, MongoBoard.class);
-        mongoBoards.forEach(mongoBoard -> mongoBoardsMap.put(mongoBoard.getBoard(), mongoBoard));
+        mongoBoards.forEach(mongoBoard -> {
+            mongoBoardsMap.put(mongoBoard.getBoardString(), mongoBoard);
+            mongoBoard.generateProbabilities();
+        });
         log.info("Successfully downloaded mongoBoards: " + mongoBoards.size());
+    }
+
+    @Nullable
+    private MongoBoard downloadMongoBoard(@NonNull String boardString) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(boardString));
+        val mongoBoard = mongoTemplate.findOne(query, MongoBoard.class);
+        if (mongoBoard != null) {
+            mongoBoardsMap.put(mongoBoard.getBoardString(), mongoBoard);
+            mongoBoard.generateProbabilities();
+        }
+        return mongoBoard;
     }
 
     /**
@@ -45,17 +61,20 @@ public class MongoService {
     @NonNull
     public Point getProbabilityMove(@NonNull Players player, @NonNull String[][] board) {
 
-        if (mongoBoardsMap.isEmpty()) {
-            downloadMongoBoards(board.length);
-        }
+//        if (mongoBoardsMap.isEmpty()) {
+//            downloadMongoBoards(board.length);
+//        }
 
         val boardString = GameUtils.transformBoardToString(board);
         MongoBoard mongoBoard;
         if (mongoBoardsMap.containsKey(boardString)) {
             mongoBoard = mongoBoardsMap.get(boardString);
         } else {
-            mongoBoard = new MongoBoard(boardString, board.length, GameUtils.getAvailableMoves(board));
-            mongoBoardsMap.put(boardString, mongoBoard);
+            mongoBoard = downloadMongoBoard(boardString);
+            if (mongoBoard == null) {
+                mongoBoard = new MongoBoard(boardString, board.length);
+                mongoBoardsMap.put(boardString, mongoBoard);
+            }
         }
         val mongoMoves = player == Players.FIRST ? mongoBoard.getFirstPlayerMoves() : mongoBoard.getSecondPlayerMoves();
         List<Point> probabilityMoves = new ArrayList<>();
@@ -80,6 +99,7 @@ public class MongoService {
                     mongoMove.setProbability(mongoMove.getProbability() + 1);
                 }
             }
+            mongoBoard.generateProbabilitiesString();
         }
     }
 
@@ -98,6 +118,7 @@ public class MongoService {
                     }
                 }
             }
+            mongoBoard.generateProbabilitiesString();
         }
     }
 
@@ -115,5 +136,14 @@ public class MongoService {
             log.info(index + " / " + mongoBoardsMap.size());
         }
         log.info("Successfully saved mongoBoards count: " + savedBoardsCount);
+    }
+
+    public void logBoardProbabilities(String boardString) {
+        if (mongoBoardsMap.containsKey(boardString)) {
+            val mongoBoard = mongoBoardsMap.get(boardString);
+            log.info(mongoBoard.firstPlayerProbabilities);
+        } else {
+            log.info("Nothing to log");
+        }
     }
 }
