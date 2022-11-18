@@ -25,6 +25,8 @@ public class MongoService {
 
     private Map<String, MongoBoard> mongoBoardsMap = new HashMap<>();
 
+    private int newBoardsCount = 0;
+
 
     private Random random = new Random();
 
@@ -61,18 +63,19 @@ public class MongoService {
     @NonNull
     public Point getProbabilityMove(@NonNull Players player, @NonNull String[][] board) {
 
-//        if (mongoBoardsMap.isEmpty()) {
-//            downloadMongoBoards(board.length);
-//        }
+        if (mongoBoardsMap.isEmpty()) {
+            downloadMongoBoards(board.length);
+        }
 
         val boardString = GameUtils.transformBoardToString(board);
-        MongoBoard mongoBoard;
+        MongoBoard mongoBoard = null;
         if (mongoBoardsMap.containsKey(boardString)) {
             mongoBoard = mongoBoardsMap.get(boardString);
         } else {
-            mongoBoard = downloadMongoBoard(boardString);
+           //mongoBoard = downloadMongoBoard(boardString);
             if (mongoBoard == null) {
                 mongoBoard = new MongoBoard(boardString, board.length);
+                newBoardsCount++;
                 mongoBoardsMap.put(boardString, mongoBoard);
             }
         }
@@ -148,7 +151,7 @@ public class MongoService {
             }
             log.info(index + " / " + mongoBoardsMap.size());
         }
-        log.info("Successfully saved mongoBoards count: " + savedBoardsCount);
+        log.info("Successfully saved mongoBoards count: " + savedBoardsCount + " / new boards = " + newBoardsCount);
     }
 
     public void logBoardProbabilities(String boardString) {
